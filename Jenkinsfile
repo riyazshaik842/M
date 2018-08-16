@@ -1,40 +1,47 @@
-node('master') 
+node ('master')
 {
-   
-   stage('ContinuousDownload') 
-   {
-     git 'https://github.com/selenium-saikrishna/maven.git'
-   } 
-
-   stage('ContinuousBuild') 
-   {
-     
-        sh '''
-         mvn package'''
-    } 
-     
-    stage('ContinuousDeployment')
+    stage ('continuous download')
     {
-        sh 'scp /var/lib/jenkins/workspace/CodeasPipeline@2/webapp/target/webapp.war vagrant@10.10.10.22:/var/lib/tomcat7/webapps/qaenv.war'
+    
+        git 'https://github.com/riyazshaik842/M.git'
+    }
+    
+    stage ('continuous build')
+    {
+        sh 'mvn package'
+    }
+    
+    stage ('continuous deployment')
+    {
+        sh 'scp /var/lib/jenkins/workspace/pipeline/webapp/target/webapp.war ubuntu@172.31.24.3:/var/lib/tomcat7/webapps/qaenv.war'
 
     }
     
-    stage('ContinuousTesting')
+    stage ('continuous testing')
     {
-        git 'https://github.com/selenium-saikrishna/TestingOnLinux.git'
-        sh 'java -jar /var/lib/jenkins/workspace/CodeasPipeline/testing.jar'
-
+        git 'https://github.com/riyazshaik842/Test.git'
+        
+        sh ''' java -jar /var/lib/jenkins/workspace/pipeline/testing.jar
+'''
+        
         
     }
     
-    stage('ContinuousDelivery')
+    stage('continuous delivery')
     {
-       input message: 'Waiting for approval from Delivery Manager', submitter: 'Venu'
-        sh 'scp /var/lib/jenkins/workspace/CodeasPipeline@2/webapp/target/webapp.war vagrant@10.10.10.23:/var/lib/tomcat7/webapps/prodenv.war'
+        input 'can we proceed with delivery?'
+        
+        sh '''scp /var/lib/jenkins/workspace/pipeline/webapp/target/webapp.war ubuntu@172.31.24.48:/var/lib/tomcat7/webapps/prodenv.war
+'''
+        
+        
     }
     
     
     
+    
+    
+}
     
     
     
